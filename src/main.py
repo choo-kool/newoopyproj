@@ -219,8 +219,8 @@ class Game:
         self.__npcs_interacted = False # no double interactions
 
         self.__room_state = {
-            "Mansion's Drawing Room": {"clue": "Torn piece of fabric", "found": False},
-            "Upstairs": {"clue": "Cigarette box", "found": False},
+            "Mansion's Drawing Room": {"clue": "Torn piece of fabric", "found": False, "spoken": False},
+            "Upstairs": {"clue": "Cigarette box", "found": False, "spoken": False},
         }
 
         self.__crime_scene = CrimeScene("Mansion's Drawing Room", self.__room_state["Mansion's Drawing Room"]["clue"])
@@ -235,6 +235,7 @@ class Game:
 
         self.__clues = []
         self.__notes = Notepad()
+
 
     @property
     def log(self):
@@ -331,6 +332,9 @@ class Game:
 
         self.__logger.log("Interactions happening: ")
 
+        room_name = self.__crime_scene.location
+
+
         print("You decide to interact with the characters in the room.")
         character = int(input("If you want to speak to the witness and a "
                            "suspect, "
@@ -339,7 +343,7 @@ class Game:
                         "room, choose 2: "))
 
         if character == 1:
-            if not self.__characters_interacted:
+            if not self.__room_state[room_name]["spoken"]:
                 self.__logger.log("Interacting with suspects and witnesses.")
                 print(
                     "You decide to interact with the witness and suspect in "
@@ -367,7 +371,7 @@ class Game:
                 # use the new abstract method
                 print(self.__witness.perform_action())
 
-                self.__characters_interacted = True
+                self.__room_state[room_name]["spoken"] = True
             else:
                 print(
                     "You have already interacted with the characters. They no "
