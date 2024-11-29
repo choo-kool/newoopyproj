@@ -63,15 +63,9 @@ class TrapRoom(CrimeScene):
         #self.trapped = trapped
         self.investigated = False
         self.clues = []
-    def set_trapped(self, value):
-        """Setter for trapped attribute"""
-        self.trapped = value
-"""" Could be Used intead of traped room
-class TrapRoom(CrimeScene):
-    ""Special room where the player can get trapped.""
-    def __init__(self, location):
-        super().__init__(location)
-"""
+
+
+
 #class for combination lock, attributes code and if the lock has been solved or not
 class CombinationLock:
     def __init__(self):
@@ -95,7 +89,8 @@ class CombinationLock:
         self._solved = solved
 
 #class for user to write down notes in order to solve the puzzle
-class NotePad:
+class Notepad:
+
     def __init__(self):
         self._page = []
 
@@ -229,6 +224,7 @@ class Game:
         self.__doors_checker = [False, False, False] # avoid using a door again
 
         self.__clues = []
+        self.__notes = Notepad()
 
     @property
     def log(self):
@@ -265,8 +261,9 @@ class Game:
         else:
             player_input = input(
                 "Press 'q' to quit, 'c' to continue, 'i' to interact, "
-                "'e' to examine clues, 'r' to review clues or 'd' to choose a "
-                "door: ")
+                "'e' to examine clues, 'r' to review clues, 'd' to choose a door, "
+                "or 'n' to write a note:\n")
+
             if player_input.lower() == "q":
                 self.__running = False
             elif player_input.lower() == "c":
@@ -283,6 +280,22 @@ class Game:
                     print(clues)
                 else:
                     print("You have not found any clues yet.")
+            elif player_input.lower() == "n":
+                note_choice = int(input("Review your notes or write a new note"
+                                    "\n1. Review notes"
+                                    "\n2. Write a new note: "))
+                if note_choice == 1:
+                    if len(self.__notes.page) < 1:
+                        print("You haven't written anything yet"
+                              "\nMake sure you take down anything important")
+                    else:
+                        for note in self.__notes.page:
+                            print(note)
+                elif note_choice == 2:
+                    user_note = input("Write notes here: ")
+                    self.__notes.page.append(user_note)
+                else:
+                    print("Invalid selection")
 
             self.__logger.log(f"Player input: {player_input}")
 
@@ -393,7 +406,6 @@ class Game:
 
         # Instances of Trap Room class
         trapped_room = TrapRoom("Kitchen")
-
         clues_undiscovered = True
 
         trapped_clue1 = TrapRoom("Cupboards")
@@ -401,103 +413,13 @@ class Game:
         trapped_clue3 = TrapRoom("Fridge")
 
         lock = CombinationLock()
-        Notes = NotePad()
+
         self.__logger.log("Player gets trapped in the kitchen")
 
         print(f"You are now trapped in the kitchen, you must figure out the combination for the lock")
         print(f"You decide to look around for clues on how to solve the lock")
 
         # While statement to keep asking user to make sure they check all the clues finished once they found all the clues
-
-        while not lock.solved:
-            kitchen_choice = int(input("To check the kitchen cupboards for clues enter 1, "
-                                       "to check the kitchen counter enter 2,"
-                                       "to check the fridge enter 3, "
-                                       "to try the lock enter 4: "))
-
-            if kitchen_choice == 1:
-                # if user has investigated clue they cant visit the clue again
-                if not trapped_clue1.investigated:
-                    print(f"You decide to check {trapped_room.location} {trapped_clue1.location}")
-                    print(
-                        f"In one of the cupboards you find a piece of paper with an arrow pointing left drawn crudely")
-                    # adding clues and investigated state to the cupboard instance of the trap room class
-                    trapped_clue1.add_clue("Arrow pointing left")
-                    trapped_clue1.investigated = True
-
-                else:
-                    print(f"You have already searched here")
-
-            elif kitchen_choice == 2:
-                # if user has investigated clue they cant visit the clue again
-                if not trapped_clue2.investigated:
-                    print(f"You decide to check the {trapped_room.location} {trapped_clue2.location}")
-                    print(
-                        f"On the {trapped_room.location} {trapped_clue2.location} you find the number 3 carved into the wood")
-                    # adding clues and investigated state to the Counter instance of the trap room class
-
-                    trapped_clue2.add_clue("Number 3 carved into wood")
-                    trapped_clue2.investigated = True
-
-                else:
-                    print(f"You have already searched here")
-
-            elif kitchen_choice == 3:
-                # if user has investigated clue they cant visit the clue again
-                if not trapped_clue3.investigated:
-                    print(f"You decide to check the {trapped_room.location} {trapped_clue3.location}")
-                    print(
-                        f"On the {trapped_room.location} {trapped_clue3.location} you find a sticky note with the letters"
-                        f" letmeout")
-                    # adding clues and investigated state to the Fridge instance of the trap room class
-                    trapped_clue3.add_clue("Word letmeout on sticky note")
-                    trapped_clue3.investigated = True
-
-                else:
-                    print(f"You have already searched here")
-
-            elif kitchen_choice == 4:
-                lock_choice = int(input(
-                    "To try guess the lock combination enter 1, to think about the clues you have been given enter 2: "))
-
-                if lock_choice == 1:
-                    user_guess = str(input("Enter the combination for the lock: "))
-                    if user_guess == lock.code:
-                        print("You have solved the cypher")
-                        # Lock has been solved, instance of lock solved attribute changed to True
-                        lock.solved = True
-                    else:
-                        print("The combination you tried was incorrect")
-
-                elif lock_choice == 2:
-                    if trapped_clue1.investigated:
-                        print(trapped_clue1.review_clues())
-                    if trapped_clue2.investigated:
-                        print(trapped_clue2.review_clues())
-                    if trapped_clue3.investigated:
-                        print(trapped_clue3.review_clues())
-
-                    user_note = input("Write notes here: ")
-                    Notes.page.append(user_note)
-
-                    for note in Notes.page:
-                        print(note)
-
-                # once condition is met after lock has been solved the user breaks out of method with return
-                if lock.solved:
-                    print(f"You have escaped the {trapped_room.location}!")
-                    return
-
-            # user is broken out of while when they have found all the clues
-            if trapped_clue1.investigated and trapped_clue2.investigated and trapped_clue3.investigated == True:
-                # while condition trapped becomes false breaking the loop
-                clues_undiscovered = False
-
-        print("There are no more places to search in the kitchen for clues,"
-              "you must try crack the combination for the lock")
-
-        lock = CombinationLock()
-        Notes = NotePad()
 
         while not lock.solved:
             lock_choice = int(input(
@@ -518,10 +440,7 @@ class Game:
                 print(trapped_clue3.review_clues())
 
                 user_note = input("Write notes here: ")
-                Notes.page.append(user_note)
 
-                for note in Notes.page:
-                    print(note)
 
         # once condition is met after lock has been solved the user breaks out of method with return
         if lock.solved:
