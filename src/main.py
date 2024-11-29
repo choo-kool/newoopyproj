@@ -36,9 +36,10 @@ class Loggable:
 
 class CrimeScene:
     # This class has not changed in this lab.
-    def __init__(self, location):
+    def __init__(self, location, stuff):
         self.location = location
         self.__clues = []
+        self.__stuff = stuff
         self.__investigated = False
 
     @property
@@ -51,6 +52,9 @@ class CrimeScene:
 
     def add_clue(self, clue):
         self.__clues.append(clue)
+
+    def examined(self):
+        return self.__stuff
 
     def review_clues(self):
         """At the moment there are no checks on who can see the clues. We
@@ -214,7 +218,13 @@ class Game:
         self.__characters_interacted = False  # no double interactions
         self.__npcs_interacted = False # no double interactions
 
-        self.__crime_scene = CrimeScene("Mansion's Drawing Room")
+        self.__room_state = {
+            "Mansion's Drawing Room": {"clue": "Torn piece of fabric", "found": False},
+            "Upstairs": {"clue": "Cigarette box", "found": False},
+        }
+
+        self.__crime_scene = CrimeScene("Mansion's Drawing Room", self.__room_state["Mansion's Drawing Room"]["clue"])
+
         self.__suspect = Suspect("Mr. Smith", "I was in the library all "
                                             "evening.", "Confirmed by the butler.")
         self.__witness = Witness("Ms. Parker", "I saw someone near the window "
@@ -392,15 +402,18 @@ class Game:
         # ...
         self.__logger.log("Examination of clues happening")
         # ...
+        room_name = self.__crime_scene.location
 
         # from before...
         print("You decide to examine the clues at the crime scene.")
-        if not self.__crime_scene.investigated:
-            print("You find a torn piece of fabric near the window.")
-            self.__crime_scene.add_clue("Torn fabric")
-            self.__crime_scene.investigated = True
+        if not self.__room_state[room_name]["found"]:
+            print(f"Looking around, you find a ... {self.__room_state[room_name]['clue']}")
+            self.__crime_scene.add_clue(self.__room_state[room_name]["clue"])
+            self.__room_state[room_name]["found"] = True  # Update room state
+            self.__logger.log(f"Clue found in {room_name}: {self.__room_state[room_name]['clue']}")
         else:
             print("You've already examined the crime scene clues.")
+
 
     def trapped_room(self):
 
@@ -439,7 +452,6 @@ class Game:
                 print(trapped_clue2.review_clues())
                 print(trapped_clue3.review_clues())
 
-                user_note = input("Write notes here: ")
 
 
         # once condition is met after lock has been solved the user breaks out of method with return
@@ -512,6 +524,12 @@ class Game:
         # ...
         self.__logger.log("Continuing the game.")
         # ...
+        if self.__crime_scene.location == "Mansion's Drawing Room":
+            print("You have moved upstairs, the mansion is littered with countless rooms")
+            self.__crime_scene = CrimeScene("Upstairs", "Cigarette box")
+        else:
+            print("You went back downstairs, you find yourself again in the grand drawing room")
+            self.__crime_scene = CrimeScene("Mansion's Drawing Room", "Torn piece of fabric")
 
         # Additional game content and interactions could go here
 
