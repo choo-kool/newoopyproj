@@ -6,9 +6,9 @@
 #   1. Joshua Stanley (C23443452).
 #   2. Andrew Ugweches (C23767071).
 #   3. Donal Harcourt (C23375883).
-#   4. Christian Bagrin ().
-#   5. Max Doyle ().
-#  Date: November 16, 2024
+#   4. Christian Bagrin (C23485084).
+#   5. Max Doyle (C23399053).
+#  Date: November 29, 2024
 #
 #
 #
@@ -50,7 +50,7 @@ class Loggable:
 
 class CrimeScene:
     # This class has not changed in this lab.
-    def __init__(self, location, stuff, objects, checked, notable, characters=None):
+    def __init__(self, location, stuff, objects, checked, notable, characters=None, npcs=None):
         self.location = location
         self.__clues = []
         self.__stuff = stuff if stuff else None
@@ -60,6 +60,7 @@ class CrimeScene:
         self.__investigated = False
         self.__spoken = False
         self.__characters = characters if characters else []
+        self.__npcs = npcs if npcs else []
 
     @property
     def investigated(self):
@@ -103,6 +104,14 @@ class CrimeScene:
     @property
     def characters(self):
         return self.__characters
+
+    @property
+    def npcs(self):
+        return self.__npcs
+
+    @npcs.setter
+    def npcs(self, npcs):
+        self.__npcs.append(npcs)
 
     def review_clues(self):
         """At the moment there are no checks on who can see the clues. We
@@ -246,8 +255,8 @@ class NPC(Character):
         return f"{self._name} decides to hang around and see what will happen."
 
     def interact(self):
-        super().interact()
-        return "\nI know nothing!"
+        parent_int = super().interact()
+        return f"{parent_int}"
 
 # Enhanced Game class using composition
 class Game:
@@ -317,25 +326,46 @@ class Game:
 
         self.__current_scene = self.__mansion_drawing_room
         #self.__present_suspect = Suspect
-        self.__juan = Suspect("Juan Rodriguez", "Really man... I'm just the gardener! Where else would"
+        self.__juan = Suspect("Juan Rodriguez", "Really man... I'm just the gardener! Where else would "
                                                 "I be all night ",
                               "Unconfirmed")
         self.__griselda = Suspect("Head maid Griselda", "I'm afraid no one has gone in the study since he passed"
-                                                        "\nMe? A suspect? If you must know I was here in this very lobby"
-                                                        "all evening, what with the mess about. Now leave me be!",
+                                                        "\nMe? A suspect? If you must know I was here in this very lobby "
+                                                        "all evening, what with the mess on the carpet. "
+                                                        "\nThe room where the necklace was is over there "
+                                                        "Now leave me be!",
                                   "Confirmed by Dorothy")
 
         self.__james = Witness("Sir James", "I don't know about that Gardener fellow,"
                                             " something about him is untrustworthy\n"
                                             "Look at the state of him!", "Mud all over gardener's clothes")
-        self.__dorothy = Witness("Junior maid Dorothy", "Griselda is nicer than she seems, I say some of the"
+        self.__dorothy = Witness("Junior maid Dorothy", "Griselda is nicer than she seems, I say some of the "
                                                         "family here don't deserve her with their attitude!",
                                  "Haughty family members")
         self.__smith = Suspect("Mr. Smith", "I was in the library all "
-                                            "evening.", "Confirmed by the butler.")
+                                            "evening."
+                                            "\n I say it was that damn maid, for years she was only loyal to Father"
+                                            , "Confirmed by the butler.")
         self.__parker = Witness("Ms. Parker", "I saw someone near the window "
                                              "at the time of the incident.",
                                "Suspicious figure in dark clothing.")
+
+        indifferent_npc = NPC("Generic Maid #5", "How do you do.")
+        friendly_npc = NPC("Butler", "Welcome to the Smith Estate")
+        hostile_npc = NPC("Cat", "MREOWWW")
+        dr_npcs = [indifferent_npc, friendly_npc, hostile_npc]
+        for i, npc in enumerate(dr_npcs, start = 0):
+            self.__current_scene.npcs = dr_npcs[i]
+        guest_npc1 = NPC("Tea party guest", "That Smith boy must clean up his act")
+        guest_npc2 = NPC("Tea party woman", "Oh certainly, I hear he's in the bookies til dark!")
+        garden_npcs = [guest_npc1, guest_npc2]
+        for i, npc in enumerate(garden_npcs, start = 0):
+            self.__garden.npcs = garden_npcs[i]
+        maid_npc = NPC("Maid #17", "Psst. Wanna know why the Head Maid has such long nails")
+        maid_npc2 = NPC("Maid #38", "Quiet she'll hear you!")
+        lobby_npcs = [maid_npc, maid_npc2]
+        for i, npc in enumerate(lobby_npcs, start = 0):
+            self.__upstairs_lobby.npcs = lobby_npcs[i]
 
 
 
@@ -573,15 +603,14 @@ class Game:
                 self.__logger.log("Interacting with people standing about.")
                 # Creating and interacting with characters
                 print("You decide to speak to other people in the room:")
-                indifferent_npc = NPC("Beatrice", "How do you do.")
-                friendly_npc = NPC("Seamus", "Welcome to our village.")
-                hostile_npc = NPC("Evil Goblin", "Leave this place!")
 
-                characters = [indifferent_npc, friendly_npc, hostile_npc]
 
-                for character in characters:
+                #characters = [indifferent_npc, friendly_npc, hostile_npc]
+
+                for character in self.__current_scene.npcs:
                     print(character.interact())
                     print(character.perform_action())
+                print("Your seasoned instincts tell you that these people have nothing to do with the case")
 
                 self.__current_scene.add_clue("Three people are hanging around the "
                                           "scene who have nothing to do with the "
@@ -589,7 +618,7 @@ class Game:
 
                 self.__npcs_interacted = True
             else:
-                print("People in the room are tied of you. They no longer "
+                print("People in the room are tired of you. They no longer "
                       "want to speak to you.")
         else:
             print("You seem to have changed your mind")
@@ -726,7 +755,7 @@ class Game:
             room_select = int(input("1. Downstairs\n"
                                     "2. Library\n"
                                     "3. Study\n"
-                                    "4. Trophy room"))
+                                    "4. Trophy room: "))
             if room_select == 1:
                 print("You went back downstairs, you find yourself again in the grand drawing room")
                 self.__current_scene = self.__mansion_drawing_room
@@ -758,6 +787,8 @@ class Game:
                     self.__present_suspect = self.__griselda
                     self.__present_witness = self.__dorothy
 
+                    self.__kitchen.add_char(self.__griselda)
+                    self.__kitchen.add_char(self.__dorothy)
                     self.__upstairs_lobby.remove_char(self.__griselda)
                     self.__upstairs_lobby.remove_char(self.__dorothy)
                     self.__logger.log("Maids have moved room")
@@ -801,7 +832,7 @@ class Game:
         elif self.__current_scene == self.__library:
             if self.__current_scene.checked[1]:
                 room_select = int(input("1. Back to lobby\n"
-                                        "2. Hidden passage"))
+                                        "2. Hidden passage: "))
                 if room_select == 1:
                     print("You return to the lobby")
                     self.__current_scene = self.__upstairs_lobby
