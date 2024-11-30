@@ -231,12 +231,13 @@ class Game:
 
         self.__room_state = {
             "Mansion's Drawing Room": {"clue": "Torn piece of fabric", "found": False, "spoken": False,
-                                       "objects": ["cabinet", "drawer", "mouse"],
-                                       "checked":[False, False, False],
-                                        "notable": ["a bloody spoon", "an old receipt", "nothing"]},
+                        "objects": ["cabinet", "drawer", "mouse"],
+                        "checked":[False, False, False],
+                        "notable": ["a bloody spoon", "an old receipt", "nothing"]},
             "Upstairs": {"clue": "Cigarette box", "found": False, "spoken": False,
-                         "objects": ["carpet", "balcony", "ladder"],
-                         "checked":[False, False, False]},
+                         "objects": ["The carpet", "The balcony", "The ladder"],
+                         "checked":[False, False, False],
+                         "notable": ["ash", "nothing", "nothing"]},
         }
 
 
@@ -250,8 +251,6 @@ class Game:
         self.__witness = Witness("Ms. Parker", "I saw someone near the window "
                                              "at the time of the incident.",
                                "Suspicious figure in dark clothing.")
-        self.__doors = ["Front door", "Library door", "Kitchen door"]
-        self.__doors_checker = [False, False, False] # avoid using a door again
 
         self.__clues = []
         self.__notes = Notepad()
@@ -292,15 +291,15 @@ class Game:
 
         else:
             player_input = input(
-                "Press 'q' to quit, 'c' to continue, 'i' to interact, "
-                "'e' to examine clues, 'r' to review clues from this room, 'd' to choose a door, "
-                "or 'n' to open your notepad:\n")
+                "ACTIONS:\n'q' to quit, 'c' to continue, \n's' to speak"
+                "\n'e' to examine clues, 'r' to review clues from this room, \n'l' to look around, "
+                "or 'n' to open your notepad\n: ")
 
             if player_input.lower() == "q":
                 self.__running = False
             elif player_input.lower() == "c":
                 self.continue_game()
-            elif player_input.lower() == "i":
+            elif player_input.lower() == "s":
                 self.interact_with_characters()
             elif player_input.lower() == "e":
                 self.examine_clues()
@@ -552,27 +551,33 @@ class Game:
         if 0 < objects_choice < len(self.__room_state[room_name]["objects"])+1: # for valid entry check
             if objects_choice == 1:
                 if not self.__room_state[room_name]["checked"][0]:
-                    print(f"You decide to investigate the {self.__room_state[room_name]["objects"][0]} "
-                          f"with a little work you find ... {self.__room_state[room_name]["notable"][0]} ")
-                    self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][0]} "
-                                                f"in {self.__room_state[room_name]["objects"][0]}")
+                    if self.__room_state[room_name]["notable"][0] != "nothing":
+                        print(f"You decide to investigate the {self.__room_state[room_name]["objects"][0]} "
+                              f"with a little work you find ... {self.__room_state[room_name]["notable"][0]} ")
+                        self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][0]} "
+                                                    f"in {self.__room_state[room_name]["objects"][0]}")
+                    else:
+                        print("You find nothing")
                     self.__room_state[room_name]["checked"][0] = True
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]} was investigated.")
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]} was investigated.")
                 else:
                     print("You already checked this out")
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]}"
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]}"
                                       f"already investigated. No access.")
             elif objects_choice == 2:
                 if not self.__room_state[room_name]["checked"][1]:
-                    print(f"You decide to investigate the {self.__room_state[room_name]["objects"][1]} "
-                          f"with a little work you find ... {self.__room_state[room_name]["notable"][1]} ")
-                    self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][1]} "
-                                                f"in {self.__room_state[room_name]["objects"][1]}")
+                    if self.__room_state[room_name]["notable"][1] != "nothing":
+                        print(f"You decide to investigate the {self.__room_state[room_name]["objects"][1]} "
+                              f"with a little work you find ... {self.__room_state[room_name]["notable"][1]} ")
+                        self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][1]} "
+                                                    f"in {self.__room_state[room_name]["objects"][1]}")
+                    else:
+                        print("You find nothing")
                     self.__room_state[room_name]["checked"][1] = True
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]} was investigated.")
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]} was investigated.")
                 else:
                     print("You've checked this already.")
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]}"
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]}"
                                       f"already investigated. No access.")
             elif objects_choice == 3:
                 if not self.__room_state[room_name]["checked"][2]:
@@ -586,15 +591,19 @@ class Game:
                     
                     self.trapped_room()
                     """
-                    print(f"You decide to investigate the {self.__room_state[room_name]["objects"][1]} "
-                          f"with a little work you find ... {self.__room_state[room_name]["notable"][1]} ")
-                    self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][1]} "
-                                                f"in {self.__room_state[room_name]["objects"][1]}")
-                    self.__room_state[room_name]["checked"][1] = True
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]} was investigated.")
+                    if self.__room_state[room_name]["notable"][2] != "nothing":
+                        print(f"You decide to investigate the {self.__room_state[room_name]["objects"][2]} "
+                              f"with a little work you find ... {self.__room_state[room_name]["notable"][2]} ")
+                        self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][2]} "
+                                                    f"in {self.__room_state[room_name]["objects"][2]}")
+                    else:
+                        print("You find nothing")
+
+                    self.__room_state[room_name]["checked"][2] = True
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]} was investigated.")
                 else:
                     print("You've checked this out already.")
-                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice]}"
+                    self.__logger.log(f"{self.__room_state[room_name]["objects"][objects_choice-1]}"
                                       f"already investigated. No access.")
         else:
             print("You stare out into space.")
@@ -605,7 +614,7 @@ class Game:
         # ...
         self.__logger.log("Continuing the game.")
         print("You decide to take a new angle, checking a different room of the mansion")
-        
+
         # ...
         if self.__crime_scene.location == "Mansion's Drawing Room":
             print("You have moved upstairs, the mansion is littered with countless rooms")
@@ -634,8 +643,9 @@ class Game:
             self.__crime_scene.add_clue(self.__suspect.provide_alibi())
         for i, object in enumerate(self.__room_state[room_name]["checked"], start =0):
             if self.__room_state[room_name]["checked"][i]:
-                self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][i]} "
-                                            f"in {self.__room_state[room_name]["objects"][i]}")
+                if self.__room_state[room_name]["notable"][i] != "nothing":
+                    self.__crime_scene.add_clue(f"{self.__room_state[room_name]["notable"][i]} "
+                                                f"in {self.__room_state[room_name]["objects"][i]}")
 
 
 
