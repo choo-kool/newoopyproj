@@ -330,8 +330,14 @@ class Game:
                                     break
 
                     elif note_choice == 2:
-                        user_note = input("Write notes here: ")
-                        self.__notes.page.append(user_note)
+                        done = False
+                        while not done:
+                            user_note = input("Write notes here "
+                                              "\nor type !q to close your notebook\n: ")
+                            if user_note == "!q":
+                                done = True
+                            else:
+                                self.__notes.page.append(user_note)
                     else:
                         raise ValueError
                 except ValueError:
