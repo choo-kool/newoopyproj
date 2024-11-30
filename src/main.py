@@ -293,7 +293,7 @@ class Game:
 
 
         self.__current_scene = self.__mansion_drawing_room
-
+        #self.__present_suspect = Suspect
 
         self.__suspect = Suspect("Mr. Smith", "I was in the library all "
                                             "evening.", "Confirmed by the butler.")
@@ -537,52 +537,6 @@ class Game:
             self.__logger.log(f"Clue found in {room_name}: {self.__current_scene.stuff}")
         else:
             print("You've already examined the crime scene clues.")
-
-    """
-    def trapped_room(self):
-
-        # Instances of Trap Room class
-        trapped_room = TrapRoom("Kitchen")
-        clues_undiscovered = True
-
-        trapped_clue1 = TrapRoom("Cupboards")
-        trapped_clue2 = TrapRoom("Counter")
-        trapped_clue3 = TrapRoom("Fridge")
-
-        lock = CombinationLock()
-
-        self.__logger.log("Player gets trapped in the kitchen")
-
-        print(f"You are now trapped in the kitchen, you must figure out the combination for the lock")
-        print(f"You decide to look around for clues on how to solve the lock")
-
-        # While statement to keep asking user to make sure they check all the clues finished once they found all the clues
-
-        while not lock.solved:
-            lock_choice = int(input(
-                "To try guess the lock combination enter 1, to think about the clues you have been given enter 2: "))
-
-            if lock_choice == 1:
-                user_guess = str(input("Enter the combination for the lock: "))
-                if user_guess == lock.code:
-                    print("You have solved the cypher")
-                    # Lock has been solved, instance of lock solved attribute changed to True
-                    lock.solved = True
-                else:
-                    print("The combination you tried was incorrect")
-
-            if lock_choice == 2:
-                print(trapped_clue1.review_clues())
-                print(trapped_clue2.review_clues())
-                print(trapped_clue3.review_clues())
-
-
-
-        # once condition is met after lock has been solved the user breaks out of method with return
-        if lock.solved:
-            print(f"You have escaped the {trapped_room.location}!")
-            return
-    """
 
     def look_around(self):
         # ...

@@ -1,0 +1,25 @@
+Game started
+I'm updating
+Game is starting
+Player input: s
+I'm updating
+Continuing the game.
+Player input: c
+I'm updating
+Examination of clues happening
+Clue found in Upstairs: Cigarette box
+Player input: e
+I'm updating
+Player checking surroundings: 
+The carpet was investigated.
+Player input: l
+I'm updating
+Player input: r
+I'm updating
+Continuing the game.
+Player input: c
+I'm updating
+Continuing the game.
+Player input: c
+I'm updating
+Player input: q
