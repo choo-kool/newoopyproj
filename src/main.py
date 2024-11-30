@@ -249,8 +249,6 @@ class Game:
         # ...
         print("Welcome to 'The Poirot Mystery'")
         print("You are about to embark on a thrilling adventure as a detective.")
-        print("Not everything is as it seems"
-              "\nMake sure to use your own notebook to compile all your clues")
         print("Your expertise is needed to solve a complex case and unveil the truth.")
 
 
@@ -295,24 +293,65 @@ class Game:
                 else:
                     print("You have not found any clues here yet.")
             elif player_input.lower() == "n":
-                note_choice = int(input("Review your notes or write a new note"
-                                    "\n1. Review notes"
-                                    "\n2. Write a new note\n: "))
-                if note_choice == 1:
-                    if len(self.__notes.page) < 1:
-                        print("You haven't written anything yet"
-                              "\nMake sure you take down anything important")
+                try:
+                    note_choice = int(input("Review your notes or write a new note"
+                                            "\n1. Review notes"
+                                            "\n2. Write a new note\n: "))
+                    if note_choice == 1:
+                        if len(self.__notes.page) < 1:
+                            print("You haven't written anything yet"
+                                  "\nMake sure you take down anything important")
+                        else:
+                            print("Your Notebook")
+                            i = 0
+                            while note_choice:
+                                if i >= len(self.__notes.page):
+                                    print("You haven't written anything else down")
+                                    i = len(self.__notes.page)
+                                elif i < 0:
+                                    print("Your hands fumble, almost dropping your trusted notebook")
+                                    i=0
+                                else:
+                                    self.check_notes(i)
+                                page_choice = input("Press n for next page, p for previous, a to display all notes "
+                                                    "or press c to close your notebook and continue: ")
+                                if page_choice.lower() == "p":
+                                    i -= 1
+                                elif page_choice.lower() == "n":
+                                    i += 1
+                                elif page_choice.lower() == "a":
+                                    self.check_notes(page_choice)
+                                    break
+                                elif page_choice.lower() == "c":
+                                    print("You close your notebook, eager to continue the case")
+                                    break
+                                else:
+                                    print("You clumsily drop your notebook")
+                                    break
+
+                    elif note_choice == 2:
+                        user_note = input("Write notes here: ")
+                        self.__notes.page.append(user_note)
                     else:
-                        for i, note in enumerate(self.__notes.page, start=1):
-                            print(f"Note {i}:")
-                            print(f"{note}")
-                elif note_choice == 2:
-                    user_note = input("Write notes here: ")
-                    self.__notes.page.append(user_note)
-                else:
-                    print("Invalid selection")
+                        raise ValueError
+                except ValueError:
+                    print("You think to yourself for a moment, wondering how you've come this far "
+                          "before eventually closing your notepad")
+
+
 
             self.__logger.log(f"Player input: {player_input}")
+
+    def check_notes(self, page):
+        if type(page) == int:
+            print(f"Note {page + 1}:")
+            print(f"'{self.__notes.page[page]}'")
+        else:
+            for i, page in enumerate(self.__notes.page, start=0):
+                print(f"Note {i + 1}:")
+                print(f"'{self.__notes.page[i]}'")
+
+
 
     def start_game(self):
         # ...
@@ -326,6 +365,7 @@ class Game:
         print("As the famous detective, you're here to solve the mysterious case of...")
         print("'The Missing Diamond Necklace'.")
         print("Put your detective skills to the test and unveil the truth!")
+        print("Keep your trusty notebook handy to help solve clues")
 
     def interact_with_characters(self):
         """The interact_with_characters method within the Game class
