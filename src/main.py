@@ -8,10 +8,15 @@
 #   3. Donal Harcourt (C23375883).
 #   4. Christian Bagrin (C23485084).
 #   5. Max Doyle (C23399053).
-#  Date: November 29, 2024
+#  Date: November 30, 2024
 #
 #
+#This is a text-driven mystery game where you as the detective
+#must talk to characters, find clues and interact with your surroundings to help make your decision.
+#Once you think you have come to a conclusion, you can accuse any of the People of Interest as the culprit
+#but only one suspect is right!
 #
+#Game uses multiple instances of various classes to create interactive and dynamic rooms, objects and characters
 #
 
 
@@ -25,15 +30,19 @@ class Loggable:
     def __init__(self):
         self.__logs = []
 
+    #property to return the protected list of logs
     @property
     def logs(self):
         return self.__logs
 
+    #appends the passed message parameter to the protected log list
     def log(self, message):
         if isinstance(message, str):
             self.__logs.append(message)
 
+    #function for writing the logs to a file
     def write_to_file(self, filename):
+        #try and except for opening the file, giving feedback when and where an error occurs
         try:
             f = open(filename, "w")
             try:
@@ -47,10 +56,11 @@ class Loggable:
             print("Something went wrong creating the file")
 
 
-
+#This class handles the CrimeScenes or rooms, using this class I can create various attributes
+#that correspond to each room
 class CrimeScene:
     # This class has not changed in this lab.
-    def __init__(self, location, stuff, objects, checked, notable, characters=None, npcs=None):
+    def __init__(self, location, stuff, objects, checked, notable, characters=None, npcs=None, npcs_talked=None):
         self.location = location
         self.__clues = []
         self.__stuff = stuff if stuff else None
@@ -61,7 +71,9 @@ class CrimeScene:
         self.__spoken = False
         self.__characters = characters if characters else []
         self.__npcs = npcs if npcs else []
+        self.__npcs_talked = npcs_talked if npcs_talked else False
 
+    #property and setters for various protected attributes
     @property
     def investigated(self):
         return self.__investigated
@@ -70,6 +82,7 @@ class CrimeScene:
     def investigated(self, value):
         self.__investigated = value
 
+    #add the clue to the current rooms clues
     def add_clue(self, clue):
         self.__clues.append(clue)
 
@@ -81,6 +94,7 @@ class CrimeScene:
     def spoken(self):
         return self.__spoken
 
+    #used to set that the Characters in the room have been spoken to
     @spoken.setter
     def spoken(self, value):
         self.__spoken = value
@@ -89,22 +103,27 @@ class CrimeScene:
     def objects(self):
         return self.__objects
 
+    #return the notable information from the objects, this is oft. used for the descriptions or special items within vessels
     @property
     def notable(self):
         return self.__notable
 
+    #return whether a specific object has been checked
     @property
     def checked(self):
         return self.__checked
 
+    #set various individual interactive objects as having been checked
     @checked.setter
     def checked(self, i):
         self.__checked[i] = True
 
+    #this property is used to store which characters are present in the room
     @property
     def characters(self):
         return self.__characters
 
+    #I use this property and setter to store a list of all the NPCs that belong to each crimescene
     @property
     def npcs(self):
         return self.__npcs
@@ -113,35 +132,48 @@ class CrimeScene:
     def npcs(self, npcs):
         self.__npcs.append(npcs)
 
+    #these properties and setters mark whether the rooms npcs have been talked to
+    @property
+    def npcs_talked(self):
+        return self.__npcs_talked
+
+    @npcs_talked.setter
+    def npcs_talked(self, value):
+        self.__npcs_talked = value
+
     def review_clues(self):
         """At the moment there are no checks on who can see the clues. We
         might need some further protection here."""
         return self.__clues
 
+    #I use this for when a character appears in a diff room or for initialising the characters in each room
     def add_char(self, character):
         if character:
             self.__characters.append(character)
-
+    #this for removing characters from certain rooms
     def remove_char(self, character):
         if character:
             self.__characters.remove(character)
 
 
-
+#This is a subclass of Crimescene, that inherits all attributes but also possesses a trapped attribute and code
+# attribute, allowing the creation of rooms which can trap the players
 class TrapRoom(CrimeScene):
     def __init__(self, location, stuff, objects, checked, notable, code):
         super().__init__(location, stuff, objects, checked, notable)
         self.__trapped = True
         self.__code = code
 
+    #property and setter to signal whether the room is still ready to trap the player/been unlocked
     @property
     def trapped(self):
         return self.__trapped
 
     @trapped.setter
     def trapped(self, value):
-        self.__trapped = False
+        self.__trapped = value
 
+    #set the password of the lock found in the trap room
     @property
     def code(self):
         return self.__code
@@ -273,11 +305,11 @@ class Game:
         self.__running = True
         self.__game_started = False
 
-        self.__npcs_interacted = False # no double interactions
+        #self.__npcs_interacted = False # no double interactions
 
 
 
-
+        #this is the creation of the room or CrimeScene objects with their respective attributes
         self.__mansion_drawing_room = CrimeScene("Mansion's Drawing Room", "Torn piece of fabric",
                                                  ["cabinet", "drawer", "mouse"],
                                                  [False, False, False],
@@ -319,13 +351,13 @@ class Game:
                                         [], [], [])
 
 
-        #sus juan in garden
-        #w Sir.James, i don't trust him
-        #sus griselda in upstairs
-        #w dorothy upstairs, gris nicer than she looks
 
+        #sets the current, starting room to the drawing room
         self.__current_scene = self.__mansion_drawing_room
-        #self.__present_suspect = Suspect
+
+
+
+        #here I create all the characters, suspects and witnesses who will be of importance to the game
         self.__juan = Suspect("Juan Rodriguez", "Really man... I'm just the gardener! Where else would "
                                                 "I be all night ",
                               "Unconfirmed")
@@ -350,29 +382,35 @@ class Game:
                                              "at the time of the incident.",
                                "Suspicious figure in dark clothing.")
 
+
+        #this was a creation of a bunch of npcs to populate various rooms in the game
         indifferent_npc = NPC("Generic Maid #5", "How do you do.")
         friendly_npc = NPC("Butler", "Welcome to the Smith Estate")
         hostile_npc = NPC("Cat", "MREOWWW")
         dr_npcs = [indifferent_npc, friendly_npc, hostile_npc]
+        #for loop to add the list of npcs to the Crimescene's npc list
         for i, npc in enumerate(dr_npcs, start = 0):
             self.__current_scene.npcs = dr_npcs[i]
         guest_npc1 = NPC("Tea party guest", "That Smith boy must clean up his act")
         guest_npc2 = NPC("Tea party woman", "Oh certainly, I hear he's in the bookies til dark!")
         garden_npcs = [guest_npc1, guest_npc2]
+        # for loop to add the list of npcs to the Crimescene's npc list
         for i, npc in enumerate(garden_npcs, start = 0):
             self.__garden.npcs = garden_npcs[i]
         maid_npc = NPC("Maid #17", "Psst. Wanna know why the Head Maid has such long nails")
         maid_npc2 = NPC("Maid #38", "Quiet she'll hear you!")
         lobby_npcs = [maid_npc, maid_npc2]
+        # for loop to add the list of npcs to the Crimescene's npc list
         for i, npc in enumerate(lobby_npcs, start = 0):
             self.__upstairs_lobby.npcs = lobby_npcs[i]
 
 
 
-
+        #set Ms Parker and Mr Smith as the witness and suspect present in the current scene
         self.__present_witness = self.__parker
         self.__present_suspect = self.__smith
 
+        #add all the important characters to their rooms
         self.__mansion_drawing_room.add_char(self.__parker)
         self.__mansion_drawing_room.add_char(self.__smith)
 
@@ -382,7 +420,7 @@ class Game:
         self.__garden.add_char(self.__juan)
         self.__garden.add_char(self.__james)
 
-        #add the rest too
+        #adding the character to the testing room, this room is used solely for making your final decision
         self.__testingRoom.add_char(self.__smith)
         self.__testingRoom.add_char(self.__parker)
         self.__testingRoom.add_char(self.__griselda)
@@ -404,6 +442,7 @@ class Game:
         # ...
         self.__logger.log("Game started")
         # ...
+        #starting game
         print("Welcome to 'The Poirot Mystery'")
         print("You are about to embark on a thrilling adventure as a detective.")
         print("Your expertise is needed to solve a complex case and unveil the truth.")
@@ -416,7 +455,8 @@ class Game:
         # ...
         self.__logger.log("I'm updating")
         # ...
-
+        #game update
+        #if game hasn't fully started then limit options to starting and quitting
         if not self.__game_started:
             player_input = input("Press 'q' to quit or 's' to start: ")
             if player_input.lower() == "q":
@@ -424,10 +464,11 @@ class Game:
             elif player_input.lower() == "s":
                 self.__game_started = True
                 self.start_game()
-
+            #trying to log important actions, should do this more often
             self.__logger.log(f"Player input: {player_input}")
 
         else:
+            #provide the characters full list of actions
             player_input = input(
                 "ACTIONS:\n'q' to quit or 'f' to finish and declare the culprit!"
                 "\n'c' to continue, 's' to speak, "
@@ -436,6 +477,7 @@ class Game:
                 f"\nCurrent Location: {self.__current_scene.location}"
                 "\n: ")
 
+            #player input handling
             if player_input.lower() == "q":
                 self.__running = False
             elif player_input.lower() == "f":
@@ -456,7 +498,9 @@ class Game:
                 else:
                     print("You have not found any clues here yet.")
             elif player_input.lower() == "n":
+                #try and except for error checking
                 try:
+                    #notepad logic which allows users to take their own notes which persist across crimescenes
                     note_choice = int(input("Review your notes or write a new note"
                                             "\n1. Review notes"
                                             "\n2. Write a new note\n: "))
@@ -476,6 +520,7 @@ class Game:
                                     i=0
                                 else:
                                     self.check_notes(i)
+                                #let players flip through their notebook pages
                                 page_choice = input("Press n for next page, p for previous, a to display all notes "
                                                     "or press c to close your notebook and continue: ")
                                 if page_choice.lower() == "p":
@@ -599,7 +644,7 @@ class Game:
                     "You have already interacted with the characters. They no "
                     "longer wish to speak to you.")
         elif character == 2:
-            if not self.__npcs_interacted:
+            if not self.__current_scene.npcs_talked:
                 self.__logger.log("Interacting with people standing about.")
                 # Creating and interacting with characters
                 print("You decide to speak to other people in the room:")
@@ -616,7 +661,7 @@ class Game:
                                           "scene who have nothing to do with the "
                                           "crime.")
 
-                self.__npcs_interacted = True
+                self.__current_scene.npcs_talked = True
             else:
                 print("People in the room are tired of you. They no longer "
                       "want to speak to you.")
