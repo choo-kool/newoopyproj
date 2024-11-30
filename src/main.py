@@ -50,7 +50,7 @@ class Loggable:
 
 class CrimeScene:
     # This class has not changed in this lab.
-    def __init__(self, location, stuff, objects, checked, notable):
+    def __init__(self, location, stuff, objects, checked, notable, characters=None):
         self.location = location
         self.__clues = []
         self.__stuff = stuff
@@ -59,6 +59,7 @@ class CrimeScene:
         self.__notable = notable
         self.__investigated = False
         self.__spoken = False
+        self.__characters = characters if characters else []
 
     @property
     def investigated(self):
@@ -99,10 +100,17 @@ class CrimeScene:
     def checked(self, i):
         self.__checked[i] = True
 
+    @property
+    def characters(self):
+        return self.__characters
+
     def review_clues(self):
         """At the moment there are no checks on who can see the clues. We
         might need some further protection here."""
         return self.__clues
+
+    def add_char(self, character):
+        self.__characters.append(character)
 
 
 class TrapRoom(CrimeScene):
@@ -125,23 +133,6 @@ class TrapRoom(CrimeScene):
 
 
 
-#class for combination lock, attributes code and if the lock has been solved or not
-class CombinationLock:
-    def __init__(self, code):
-        self.__code =  code
-        self.__solved = False
-
-    @property
-    def code(self):
-        return self.__code
-
-    @property
-    def solved(self):
-        return self.__solved
-
-    @solved.setter
-    def solved(self, solved):
-        self.__solved = solved
 
 #class for user to write down notes in order to solve the puzzle
 class Notepad:
@@ -276,12 +267,12 @@ class Game:
                                                  ["cabinet", "drawer", "mouse"],
                                                  [False, False, False],
                                                  ["a bloody spoon", "an old receipt", "nothing"])
-        self.__upstairs_lobby = CrimeScene("Upstairs", "Cigarette box",
+        self.__upstairs_lobby = CrimeScene("Upstairs Lobby", "Cigarette box",
                                            ["The carpet", "The balcony", "The ladder"],
                                            [False, False, False],
                                            ["ash", "nothing", "nothing"])
 
-        self.__kitchen = TrapRoom("The Kitchen","Scrap paper",
+        self.__kitchen = TrapRoom("Kitchen","Scrap paper",
                                    ["Fridge", "Spice cabinet", "Kitchen sink"],
                                    [False, False, False],
                                    ["A lone bottle of beer called 'letmeout'",
@@ -300,6 +291,14 @@ class Game:
         self.__witness = Witness("Ms. Parker", "I saw someone near the window "
                                              "at the time of the incident.",
                                "Suspicious figure in dark clothing.")
+
+
+
+        self.__present_witness = self.__witness
+        self.__present_suspect = self.__suspect
+
+        self.__current_scene.add_char(self.__present_suspect)
+        self.__current_scene.add_char(self.__present_witness)
 
         self.__clues = []
         self.__notes = Notepad()
@@ -453,7 +452,14 @@ class Game:
 
         self.__logger.log("Interactions happening: ")
 
-        room_name = self.__current_scene
+        if not self.__current_scene.characters:
+            print("There's nobody here")
+            return
+        else:
+            print(f"There are a few people are here in {self.__current_scene.location.lower()}")
+            print("The noteworthy being: ")
+            for i, characters in enumerate(self.__current_scene.characters, start =1):
+                print(f"{characters}")
 
         print("You decide to interact with the characters in the room.")
         character = int(input("If you want to speak to the witness and a "
@@ -469,16 +475,16 @@ class Game:
                     "You decide to interact with the witness and suspect in "
                     "the room:")
 
-                clue_suspect = self.__suspect.interact()
+                clue_suspect = self.__present_suspect.interact()
                 #self.__current_scene.add_clue(clue_suspect)
                 print(clue_suspect)  # keep the outputs going
 
-                suspect_alibi = self.__suspect.provide_alibi()
+                suspect_alibi = self.__present_suspect.provide_alibi()
                 #self.__current_scene.add_clue(suspect_alibi)
                 print(suspect_alibi)
 
                 # use the new abstract method
-                print(self.__suspect.perform_action())
+                print(self.__present_suspect.perform_action())
 
                 clue_witness = self.__witness.interact()
                 #self.__current_scene.add_clue(clue_witness)
