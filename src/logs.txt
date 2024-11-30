@@ -4,22 +4,180 @@ Game is starting
 Player input: s
 I'm updating
 Continuing the game.
+Player in Upstairs Lobby
+Player input: c
+I'm updating
+Continuing the game.
+Player in Trophy room
 Player input: c
 I'm updating
 Examination of clues happening
-Clue found in Upstairs: Cigarette box
+Clue found in Trophy room: The empty safe where the necklace was
 Player input: e
+I'm updating
+Player checking surroundings: 
+Ledger was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Mountains of papers was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Window was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player in Upstairs Lobby
+Player input: c
+I'm updating
+Continuing the game.
+Player in Upstairs Lobby
+Player input: c
+I'm updating
+Interactions happening: 
+Interacting with suspects and witnesses.
+Player input: s
+I'm updating
+Continuing the game.
+Player in Mansion's Drawing Room
+Player input: c
+I'm updating
+Continuing the game.
+Player in Garden
+Player input: c
+I'm updating
+Player checking surroundings: 
+Window was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Check soil was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Shed was investigated.
+Player input: l
+I'm updating
+Interactions happening: 
+Interacting with suspects and witnesses.
+Player input: s
+I'm updating
+Continuing the game.
+Player in Mansion's Drawing Room
+Player input: c
+I'm updating
+Continuing the game.
+Player in Upstairs Lobby
+Player input: c
 I'm updating
 Player checking surroundings: 
 The carpet was investigated.
 Player input: l
 I'm updating
-Player input: r
-I'm updating
 Continuing the game.
+Player in Mansion's Drawing Room
 Player input: c
 I'm updating
 Continuing the game.
+Player trapped in Kitchen
+Player in Kitchen
 Player input: c
 I'm updating
-Player input: q
+Continuing the game.
+Player failed lock
+Player in Kitchen
+Player input: c
+I'm updating
+Examination of clues happening
+Clue found in Kitchen: Scrap paper
+Player input: e
+I'm updating
+Player checking surroundings: 
+Fridge was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player failed lock
+Player in Kitchen
+Player input: c
+I'm updating
+Player checking surroundings: 
+Spice cabinet was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player failed lock
+Player in Kitchen
+Player input: c
+I'm updating
+Player checking surroundings: 
+Kitchen sink was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player failed lock
+Player in Kitchen
+Player input: c
+I'm updating
+Player input: n
+I'm updating
+Player input: n
+I'm updating
+Continuing the game.
+Kitchen no longer locked
+Maids have moved room
+Player in Kitchen
+Player input: c
+I'm updating
+Interactions happening: 
+Player input: s
+I'm updating
+Continuing the game.
+Player in Mansion's Drawing Room
+Player input: c
+I'm updating
+Continuing the game.
+Player in Upstairs Lobby
+Player input: c
+I'm updating
+Continuing the game.
+Player in Old Study
+Player input: c
+I'm updating
+Examination of clues happening
+Clue found in Old Study: None
+Player input: e
+I'm updating
+Player checking surroundings: 
+Bookcase was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Old diary was investigated.
+Player input: l
+I'm updating
+Player checking surroundings: 
+Minibar was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player in Upstairs Lobby
+Player input: c
+I'm updating
+Continuing the game.
+Player in Library
+Player input: c
+I'm updating
+Player checking surroundings: 
+Centre bookshelf was investigated.
+Player input: l
+I'm updating
+Continuing the game.
+Player in Trophy room
+Player input: c
+I'm updating
+Player moves to accuse
+Correct Culprit Declared
+Game End
+Player input: f
