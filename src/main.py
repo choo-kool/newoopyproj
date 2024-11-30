@@ -33,6 +33,20 @@ class Loggable:
         if isinstance(message, str):
             self.__logs.append(message)
 
+    def write_to_file(self, filename):
+        try:
+            f = open(filename, "w")
+            try:
+                for log_entry in self.__logs:
+                    f.write(log_entry+ "\n")
+            except PermissionError:
+                print("Something went wrong writing to the file")
+            finally:
+                f.close()
+        except:
+            print("Something went wrong creating the file")
+
+
 
 class CrimeScene:
     # This class has not changed in this lab.
@@ -659,3 +673,4 @@ if __name__ == "__main__":
     print("\nGame Logs:")
     for log in game.log.logs:
         print(log)
+    game.log.write_to_file("logs.txt")
