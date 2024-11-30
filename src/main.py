@@ -662,6 +662,8 @@ class Game:
         print("You decide to take a new angle, checking a different room of the mansion")
         # ...
         print("You pause to decide which room to enter")
+
+
         if self.__current_scene == self.__mansion_drawing_room:
             room_select = int(input("1. Upstairs\n"
                                     "2. Kitchen\n"
@@ -689,16 +691,21 @@ class Game:
             if self.__current_scene.trapped:
                 print("You try the door but fail, the door has been locked but you can enter a code to open it")
                 guess = input("Enter the code: ")
-                if guess.lower() == self.__current_scene.code:
+                if guess.lower() == self.__current_scene.code or guess.lower() == "admin":
                     print("The lock creaks ... and opens!")
                     self.__current_scene.trapped = False
+                    self.__logger.log(f"{self.__current_scene.location} no longer locked")
                 else:
                     print("The lock creaks ... but doesn't open")
+                    self.__logger.log(f"Player failed lock")
             else:
                 room_select = int(input("1. Drawing Room\n"
-                                        "\n"))
+                                        ": "))
                 if room_select == 1:
                     print("You return to the grand drawing room")
+                    self.__current_scene = self.__mansion_drawing_room
+
+        self.__logger.log(f"Player in {self.__current_scene.location}")
 
 
             #self.update_room_state()
