@@ -249,7 +249,10 @@ class Game:
         # ...
         print("Welcome to 'The Poirot Mystery'")
         print("You are about to embark on a thrilling adventure as a detective.")
+        print("Not everything is as it seems"
+              "\nMake sure to use your own notebook to compile all your clues")
         print("Your expertise is needed to solve a complex case and unveil the truth.")
+
 
         while self.__running:
             self.update()
@@ -272,8 +275,8 @@ class Game:
         else:
             player_input = input(
                 "Press 'q' to quit, 'c' to continue, 'i' to interact, "
-                "'e' to examine clues, 'r' to review clues, 'd' to choose a door, "
-                "or 'n' to write a note:\n")
+                "'e' to examine clues, 'r' to review clues from this room, 'd' to choose a door, "
+                "or 'n' to open your notepad:\n")
 
             if player_input.lower() == "q":
                 self.__running = False
@@ -290,18 +293,19 @@ class Game:
                 if clues:
                     print(clues)
                 else:
-                    print("You have not found any clues yet.")
+                    print("You have not found any clues here yet.")
             elif player_input.lower() == "n":
                 note_choice = int(input("Review your notes or write a new note"
                                     "\n1. Review notes"
-                                    "\n2. Write a new note: "))
+                                    "\n2. Write a new note\n: "))
                 if note_choice == 1:
                     if len(self.__notes.page) < 1:
                         print("You haven't written anything yet"
                               "\nMake sure you take down anything important")
                     else:
-                        for note in self.__notes.page:
-                            print(note)
+                        for i, note in enumerate(self.__notes.page, start=1):
+                            print(f"Note {i}:")
+                            print(f"{note}")
                 elif note_choice == 2:
                     user_note = input("Write notes here: ")
                     self.__notes.page.append(user_note)
@@ -350,7 +354,7 @@ class Game:
                     "the room:")
 
                 clue_suspect = self.__suspect.interact()
-                self.__crime_scene.add_clue(clue_suspect)
+                #self.__crime_scene.add_clue(clue_suspect)
                 print(clue_suspect)  # keep the outputs going
 
                 suspect_alibi = self.__suspect.provide_alibi()
@@ -361,7 +365,7 @@ class Game:
                 print(self.__suspect.perform_action())
 
                 clue_witness = self.__witness.interact()
-                self.__crime_scene.add_clue(clue_witness)
+                #self.__crime_scene.add_clue(clue_witness)
                 print(clue_witness)
 
                 witness_observation = self.__witness.share_observation()
@@ -527,15 +531,30 @@ class Game:
         print("You continue your investigation, determined to solve the mystery...")
         # ...
         self.__logger.log("Continuing the game.")
+
         # ...
         if self.__crime_scene.location == "Mansion's Drawing Room":
             print("You have moved upstairs, the mansion is littered with countless rooms")
             self.__crime_scene = CrimeScene("Upstairs", "Cigarette box")
+            self.update_room_state()
+
+
         else:
             print("You went back downstairs, you find yourself again in the grand drawing room")
             self.__crime_scene = CrimeScene("Mansion's Drawing Room", "Torn piece of fabric")
-
+            self.update_room_state()
         # Additional game content and interactions could go here
+
+    def update_room_state(self):
+        self.__logger.log("Finding room state.")
+
+        room_name = self.__crime_scene.location
+        if self.__room_state[room_name]["found"]:
+            self.__crime_scene.add_clue(self.__room_state[room_name]["clue"])
+        if self.__room_state[room_name]["spoken"]:
+            self.__crime_scene.add_clue((self.__witness.share_observation()))
+            self.__crime_scene.add_clue(self.__suspect.provide_alibi())
+
 
 
 # Testing the Enhanced Game
