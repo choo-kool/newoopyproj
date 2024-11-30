@@ -471,7 +471,7 @@ class Game:
             #provide the characters full list of actions
             player_input = input(
                 "ACTIONS:\n'q' to quit or 'f' to finish and declare the culprit!"
-                "\n'c' to continue, 's' to speak, "
+                "\n'c' to change room, 's' to speak, "
                 "\n'e' to examine clues, 'r' to review room clues, 'l' to look around, "
                 "\nor 'n' to open your notepad"
                 f"\nCurrent Location: {self.__current_scene.location}"
@@ -553,9 +553,9 @@ class Game:
                           "before eventually closing your notepad")
 
 
-
+            # more logging
             self.__logger.log(f"Player input: {player_input}")
-
+    #function to check notes
     def check_notes(self, page):
         if type(page) == int:
             print(f"Note {page + 1}:")
@@ -566,7 +566,7 @@ class Game:
                 print(f"'{self.__notes.page[i]}'")
 
 
-
+    #game start function
     def start_game(self):
         # ...
         self.__logger.log("Game is starting")
@@ -581,6 +581,8 @@ class Game:
         print("Put your detective skills to the test and unveil the truth!")
         print("Keep your trusty notebook handy to help solve clues")
 
+
+    #function for interacting with characters
     def interact_with_characters(self):
         """The interact_with_characters method within the Game class
         demonstrates the interaction with characters,
@@ -590,6 +592,7 @@ class Game:
 
         self.__logger.log("Interactions happening: ")
 
+        #check whether there are characters present in the current scene
         if not self.__current_scene.characters:
             print(self.__current_scene.characters)
             print("There's nobody here")
@@ -597,6 +600,7 @@ class Game:
         else:
             print(f"There are a few people are here in {self.__current_scene.location.lower()}")
             print("The noteworthy being: ")
+            #list out persons of interest
             for i, characters in enumerate(self.__current_scene.characters, start =1):
                 print(f"{characters}")
 
@@ -607,6 +611,7 @@ class Game:
                         "the "
                         "room, choose 2: "))
 
+        #selection for talking to PersonsOfInterest or NPCs
         if character == 1:
             if not self.__current_scene.spoken:
                 self.__logger.log("Interacting with suspects and witnesses.")
@@ -614,8 +619,11 @@ class Game:
                     "You decide to interact with the witness and suspect in "
                     "the room:")
 
+                #if there is a suspect present
                 if self.__present_suspect:
                     clue_suspect = self.__present_suspect.interact()
+                    #I decided to comment out a lot of these add clues as I felt they were cluttering
+                    #the review clues and also as a way to incentivize using your notebook
                     # self.__current_scene.add_clue(clue_suspect)
                     print(clue_suspect)  # keep the outputs going
 
@@ -626,6 +634,7 @@ class Game:
                     # use the new abstract method
                     print(self.__present_suspect.perform_action())
 
+                #if there is a witness present
                 if self.__present_witness:
                     clue_witness = self.__present_witness.interact()
                     # self.__current_scene.add_clue(clue_witness)
@@ -638,12 +647,15 @@ class Game:
                     # use the new abstract method
                     print(self.__present_witness.perform_action())
 
+                #mark that the PoI have been spoken to in the current room to allow for the else loop below
                 self.__current_scene.spoken = True
             else:
                 print(
                     "You have already interacted with the characters. They no "
                     "longer wish to speak to you.")
+        #talk to NPCs
         elif character == 2:
+            #check if the npcs have been talked to already
             if not self.__current_scene.npcs_talked:
                 self.__logger.log("Interacting with people standing about.")
                 # Creating and interacting with characters
@@ -652,15 +664,20 @@ class Game:
 
                 #characters = [indifferent_npc, friendly_npc, hostile_npc]
 
+                #iterate through our current scene npc list, interacting with each and performing action
                 for character in self.__current_scene.npcs:
                     print(character.interact())
                     print(character.perform_action())
-                print("Your seasoned instincts tell you that these people have nothing to do with the case")
+                #flavourtext that tells you that these NPCs are not worthy of being suspects, but their words may still hold weight
+                print("Your seasoned instincts tell you that these people have nothing to do with the case, though their words"
+                      " may be valuable")
 
+                #add clue that there are some people hanging around
                 self.__current_scene.add_clue("Three people are hanging around the "
                                           "scene who have nothing to do with the "
                                           "crime.")
 
+                #mark the npcs in this scene as been talked to
                 self.__current_scene.npcs_talked = True
             else:
                 print("People in the room are tired of you. They no longer "
@@ -668,6 +685,7 @@ class Game:
         else:
             print("You seem to have changed your mind")
 
+    #examining clues function
     def examine_clues(self):
         # ...
         self.__logger.log("Examination of clues happening")
@@ -676,17 +694,22 @@ class Game:
 
         # from before...
         print("You decide to examine the clues at the crime scene.")
+        #if the room hasnt been investigated
         if not self.__current_scene.investigated:
+            #and if there is actually something to find in the room
             if self.__current_scene.stuff:
+                #tell the player what they have found
                 print(f"Looking around, you find a ... {self.__current_scene.stuff}")
                 self.__current_scene.add_clue(self.__current_scene.stuff)
             else:
                 print("There's nothing obvious, maybe look deeper")
+            #mark the room as investigated and add it to the logs
             self.__current_scene.investigated = True  # Update room state
             self.__logger.log(f"Clue found in {room_name}: {self.__current_scene.stuff}")
         else:
             print("You've already examined the crime scene clues.")
 
+    #this is the interactive object function, allows the player to take a closer look at cabinets and drawers, etc.
     def look_around(self):
         # ...
         self.__logger.log("Player checking surroundings: ")
@@ -694,18 +717,23 @@ class Game:
 
         print("You decide to check around to see if you can find anything:")
 
-        # nice output to show which door leads to what.
+
         # human friendly output starts with 1, default would be 0.
+        #show the user which objects they can interact with
         for i, objects in enumerate(self.__current_scene.objects, start=1):
             print(f"{i}. {objects}")
 
+        #input handling
         try:
             objects_choice = int(input("Enter the number of where you want to investigate deeper: "))
 
+            #if object is within the list
             if 0 < objects_choice < len(self.__current_scene.objects) + 1:  # for valid entry check
                 if objects_choice == 1:
                     objects_choice -= 1
+                    #if the object hasn't already been checked before
                     if not self.__current_scene.checked[objects_choice]:
+                        #if the object is not nothing, this is to reduce clutter in the review clues menu
                         if self.__current_scene.notable[objects_choice] != "nothing":
                             print(f"You decide to investigate the {self.__current_scene.objects[objects_choice]} "
                                   f"with a little work you find ... {self.__current_scene.notable[objects_choice]} ")
@@ -713,10 +741,12 @@ class Game:
                                                           f"in {self.__current_scene.objects[objects_choice].lower()}")
                         else:
                             print("You find nothing")
+                        #mark which object has been checked/investigated and add it to logs
                         self.__current_scene.checked[objects_choice] = True
                         self.__logger.log(f"{self.__current_scene.objects[objects_choice]} was investigated.")
 
                     else:
+                        #provide feedback
                         print("You already checked this out")
                         self.__logger.log(f"{self.__current_scene.objects[objects_choice]}"
                                           f"already investigated. No access.")
@@ -755,13 +785,16 @@ class Game:
                         self.__logger.log(f"{self.__current_scene.objects[objects_choice]}"
                                           f"already investigated. No access.")
                     return
+        #Error handling if user inputs a bad number
         except ValueError:
             print("You stand around confused, haven't you done this before?")
 
+        #more error handling
         else:
             print("You stare out into space.")
             self.__logger.log("An invalid object was selected")
 
+    #Continue game function, this allows users to change rooms, including logic on whether theyre currently trapped in a room
     def continue_game(self):
         #print("You continue your investigation, determined to solve the mystery...")
         # ...
