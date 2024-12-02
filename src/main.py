@@ -838,7 +838,7 @@ class Game:
                 print("You went back downstairs, you find yourself again in the grand drawing room")
                 self.__current_scene = self.__mansion_drawing_room
                 self.__present_suspect = self.__smith
-                self.__present_suspect = self.__parker
+                self.__present_witness = self.__parker
             elif room_select == 2:
                 print("You enter the library, surrounded by books you continue your investigation")
                 self.__current_scene = self.__library
