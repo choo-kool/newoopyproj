@@ -939,6 +939,8 @@ class Game:
             if self.__current_scene.trapped:
                 print("You can't exactly do that right now")
                 return
+            else:
+                self.__current_scene = self.__testingRoom
         else:
             self.__current_scene = self.__testingRoom
 
