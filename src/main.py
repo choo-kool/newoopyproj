@@ -805,54 +805,62 @@ class Game:
 
 
         if self.__current_scene == self.__mansion_drawing_room:
-            room_select = int(input("1. Upstairs\n"
-                                    "2. Kitchen\n"
-                                    "3. Garden\n"
-                                    ": "))
-            if room_select == 1:
-                self.__current_scene = self.__upstairs_lobby
-                if self.__kitchen.trapped:
-                    self.__present_witness= self.__dorothy
-                    self.__present_suspect = self.__griselda
-                print("You have moved upstairs, the mansion is littered with countless rooms")
-            elif room_select == 2:
-                print("You walk into the kitchen, the smells of meat and spices fill your nose")
-                self.__current_scene = self.__kitchen
-                if self.__current_scene.trapped:
-                    print("The door slams shut behind you!")
-                    self.__logger.log(f"Player trapped in {self.__current_scene.location}")
-            elif room_select == 3:
-                print("You walk into the garden, you can't help but admire the beautiful arrangements")
-                self.__current_scene = self.__garden
-                self.__present_witness = self.__james
-                self.__present_suspect = self.__juan
-            else:
-                print("You stand in a daze")
-            #self.update_room_state()
-        elif self.__current_scene == self.__upstairs_lobby:
-            room_select = int(input("1. Downstairs\n"
-                                    "2. Library\n"
-                                    "3. Study\n"
-                                    "4. Trophy room: "))
-            if room_select == 1:
-                print("You went back downstairs, you find yourself again in the grand drawing room")
-                self.__current_scene = self.__mansion_drawing_room
-                self.__present_suspect = self.__smith
-                self.__present_witness = self.__parker
-            elif room_select == 2:
-                print("You enter the library, surrounded by books you continue your investigation")
-                self.__current_scene = self.__library
-            elif room_select == 3:
-                if self.__current_scene.characters:
-                    print("The door is blocked by the Head Maid")
+            try:
+                room_select = int(input("1. Upstairs\n"
+                                        "2. Kitchen\n"
+                                        "3. Garden\n"
+                                        ": "))
+                if room_select == 1:
+                    self.__current_scene = self.__upstairs_lobby
+                    if self.__kitchen.trapped:
+                        self.__present_witness = self.__dorothy
+                        self.__present_suspect = self.__griselda
+                    print("You have moved upstairs, the mansion is littered with countless rooms")
+                elif room_select == 2:
+                    print("You walk into the kitchen, the smells of meat and spices fill your nose")
+                    self.__current_scene = self.__kitchen
+                    if self.__current_scene.trapped:
+                        print("The door slams shut behind you!")
+                        self.__logger.log(f"Player trapped in {self.__current_scene.location}")
+                elif room_select == 3:
+                    print("You walk into the garden, you can't help but admire the beautiful arrangements")
+                    self.__current_scene = self.__garden
+                    self.__present_witness = self.__james
+                    self.__present_suspect = self.__juan
                 else:
-                    print("You enter the supposedly unused study and take note of the active lights")
-                    self.__current_scene = self.__study
-            elif room_select == 4:
-                print("You enter the trophy room, fit with endless awards and antiques")
-                self.__current_scene = self.__saferoom
-            else:
-                print("You trip but rise to your knees, the investigation continues")
+                    print("You stand in a daze")
+                # self.update_room_state()
+            except ValueError:
+                print("You stumble to your feet, but rise again")
+                return
+        elif self.__current_scene == self.__upstairs_lobby:
+            try:
+                room_select = int(input("1. Downstairs\n"
+                                        "2. Library\n"
+                                        "3. Study\n"
+                                        "4. Trophy room: "))
+                if room_select == 1:
+                    print("You went back downstairs, you find yourself again in the grand drawing room")
+                    self.__current_scene = self.__mansion_drawing_room
+                    self.__present_suspect = self.__smith
+                    self.__present_witness = self.__parker
+                elif room_select == 2:
+                    print("You enter the library, surrounded by books you continue your investigation")
+                    self.__current_scene = self.__library
+                elif room_select == 3:
+                    if self.__current_scene.characters:
+                        print("The door is blocked by the Head Maid")
+                    else:
+                        print("You enter the supposedly unused study and take note of the active lights")
+                        self.__current_scene = self.__study
+                elif room_select == 4:
+                    print("You enter the trophy room, fit with endless awards and antiques")
+                    self.__current_scene = self.__saferoom
+                else:
+                    print("You trip but rise to your knees, the investigation continues")
+            except ValueError:
+                print("You fall flat on your face, you stand back up embarssaed, the investigation continues")
+                return
         elif self.__current_scene == self.__kitchen:
             if self.__current_scene.trapped:
                 print("You try the door but fail, the door has been locked but you can enter a code to open it")
@@ -874,52 +882,33 @@ class Game:
                     print("The lock creaks ... but doesn't open")
                     self.__logger.log(f"Player failed lock")
             else:
+                try:
+                    room_select = int(input("1. Drawing Room\n"
+                                            ": "))
+                    if room_select == 1:
+                        print("You return to the grand drawing room")
+                        self.__current_scene = self.__mansion_drawing_room
+                        self.__present_suspect = self.__smith
+                        self.__present_witness = self.__parker
+                    else:
+                        print("You stand around confused")
+                except ValueError:
+                    print("You fell flat on your face...")
+        elif self.__current_scene == self.__garden:
+            try:
                 room_select = int(input("1. Drawing Room\n"
                                         ": "))
                 if room_select == 1:
                     print("You return to the grand drawing room")
                     self.__current_scene = self.__mansion_drawing_room
                     self.__present_suspect = self.__smith
-                    self.__present_witness= self.__parker
-        elif self.__current_scene == self.__garden:
-            room_select = int(input("1. Drawing Room\n"
-                                    ": "))
-            if room_select == 1:
-                print("You return to the grand drawing room")
-                self.__current_scene = self.__mansion_drawing_room
-                self.__present_suspect = self.__smith
-                self.__present_witness = self.__parker
-            else:
-                print("You stumble but rise to your feet")
-        elif self.__current_scene == self.__study:
-            room_select = int(input("1. Back to lobby\n"
-                                    ": "))
-            if room_select == 1:
-                print("You return to the lobby")
-                self.__current_scene = self.__upstairs_lobby
-            else:
-                print("You stumble but rise to your feet")
-        elif self.__current_scene == self.__saferoom:
-            room_select = int(input("1. Back to lobby\n"
-                                    ": "))
-            if room_select == 1:
-                print("You return to the lobby")
-                self.__current_scene = self.__upstairs_lobby
-            else:
-                print("You stumble but rise to your feet")
-        elif self.__current_scene == self.__library:
-            if self.__current_scene.checked[1]:
-                room_select = int(input("1. Back to lobby\n"
-                                        "2. Hidden passage: "))
-                if room_select == 1:
-                    print("You return to the lobby")
-                    self.__current_scene = self.__upstairs_lobby
-                elif room_select == 2:
-                    print("You make your way through and find yourself in the... trophy room!")
-                    self.__current_scene = self.__saferoom
+                    self.__present_witness = self.__parker
                 else:
-                    print("You stumble to your feet")
-            else:
+                    print("You stumble but rise to your feet")
+            except ValueError:
+                print("You fall on your face...")
+        elif self.__current_scene == self.__study:
+            try:
                 room_select = int(input("1. Back to lobby\n"
                                         ": "))
                 if room_select == 1:
@@ -927,6 +916,45 @@ class Game:
                     self.__current_scene = self.__upstairs_lobby
                 else:
                     print("You stumble but rise to your feet")
+            except ValueError:
+                print("You fall on your face")
+        elif self.__current_scene == self.__saferoom:
+            try:
+                room_select = int(input("1. Back to lobby\n"
+                                        ": "))
+                if room_select == 1:
+                    print("You return to the lobby")
+                    self.__current_scene = self.__upstairs_lobby
+                else:
+                    print("You stumble but rise to your feet")
+            except ValueError:
+                print("You fall on your face")
+        elif self.__current_scene == self.__library:
+            if self.__current_scene.checked[1]:
+                try:
+                    room_select = int(input("1. Back to lobby\n"
+                                            "2. Hidden passage: "))
+                    if room_select == 1:
+                        print("You return to the lobby")
+                        self.__current_scene = self.__upstairs_lobby
+                    elif room_select == 2:
+                        print("You make your way through and find yourself in the... trophy room!")
+                        self.__current_scene = self.__saferoom
+                    else:
+                        print("You stumble to your feet")
+                except ValueError:
+                    print("You fall on your face")
+            else:
+                try:
+                    room_select = int(input("1. Back to lobby\n"
+                                            ": "))
+                    if room_select == 1:
+                        print("You return to the lobby")
+                        self.__current_scene = self.__upstairs_lobby
+                    else:
+                        print("You stumble but rise to your feet")
+                except ValueError:
+                    print("You fall flat on your face")
 
         self.__logger.log(f"Player in {self.__current_scene.location}")
 
